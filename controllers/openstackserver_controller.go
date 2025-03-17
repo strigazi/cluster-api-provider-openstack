@@ -337,13 +337,13 @@ func (r *OpenStackServerReconciler) reconcileNormal(ctx context.Context, scope *
 		return ctrl.Result{}, err
 	}
 
-	err = getOrCreateServerPorts(openStackServer, networkingService)
-	if err != nil {
-		return ctrl.Result{}, err
-	}
-	portIDs := GetPortIDs(openStackServer.Status.Resources.Ports)
+	//err = getOrCreateServerPorts(openStackServer, networkingService)
+	//if err != nil {
+	//	return ctrl.Result{}, err
+	//}
+	//portIDs := GetPortIDs(openStackServer.Status.Resources.Ports)
 
-	instanceStatus, err := r.getOrCreateServer(ctx, scope.Logger(), openStackServer, computeService, portIDs)
+	instanceStatus, err := r.getOrCreateServer(ctx, scope.Logger(), openStackServer, computeService, nil)
 	if err != nil || instanceStatus == nil {
 		// Conditions set in getOrCreateInstance
 		return ctrl.Result{}, err
@@ -462,7 +462,7 @@ func (r *OpenStackServerReconciler) getOrCreateServer(ctx context.Context, logge
 			return nil, err
 		}
 		instanceSpec.Name = openStackServer.Name
-		instanceStatus, err = computeService.CreateInstance(openStackServer, instanceSpec, portIDs)
+		instanceStatus, err = computeService.CreateInstance(openStackServer, instanceSpec, nil)
 		if err != nil {
 			conditions.MarkFalse(openStackServer, infrav1.InstanceReadyCondition, infrav1.InstanceCreateFailedReason, clusterv1.ConditionSeverityError, "%s", err.Error())
 			openStackServer.Status.InstanceState = &infrav1.InstanceStateError

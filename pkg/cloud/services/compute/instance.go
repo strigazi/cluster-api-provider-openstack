@@ -53,17 +53,17 @@ func (s *Service) CreateInstance(eventObject runtime.Object, instanceSpec *Insta
 }
 
 func (s *Service) createInstanceImpl(eventObject runtime.Object, instanceSpec *InstanceSpec, retryInterval time.Duration, portIDs []string) (*InstanceStatus, error) {
-	portList := []servers.Network{}
+	//portList := []servers.Network{}
 
-	if len(portIDs) == 0 {
-		return nil, fmt.Errorf("portIDs cannot be empty")
+	if len(portIDs) != 0 {
+		return nil, fmt.Errorf("portIDs []")
 	}
 
-	for _, portID := range portIDs {
-		portList = append(portList, servers.Network{
-			Port: portID,
-		})
-	}
+	// for _, portID := range portIDs {
+	// 	portList = append(portList, servers.Network{
+	// 		Port: portID,
+	// 	})
+	// }
 
 	instanceCreateTimeout := getTimeout("CLUSTER_API_OPENSTACK_INSTANCE_CREATE_TIMEOUT", timeoutInstanceCreate)
 	instanceCreateTimeout *= time.Minute
@@ -84,7 +84,7 @@ func (s *Service) createInstanceImpl(eventObject runtime.Object, instanceSpec *I
 		ImageRef:         serverImageRef,
 		FlavorRef:        instanceSpec.FlavorID,
 		AvailabilityZone: instanceSpec.FailureDomain,
-		Networks:         portList,
+		Networks:         "auto",
 		UserData:         []byte(instanceSpec.UserData),
 		Tags:             instanceSpec.Tags,
 		Metadata:         instanceSpec.Metadata,
